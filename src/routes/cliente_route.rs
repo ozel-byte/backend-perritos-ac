@@ -1,11 +1,11 @@
 use actix_web::{get,Responder,HttpResponse};
-use super::mascota_route;
+// use super::mascota_route;
 
-struct Cliente{
-    name: String,
-    phone: i64,
-    pet: mascota_route::Mascota
-}
+// struct Cliente{
+//     name: String,
+//     phone: i64,
+//     pet: mascota_route::Mascota
+// }
 
 #[get("/user")]
 pub async fn get_user() -> impl Responder{

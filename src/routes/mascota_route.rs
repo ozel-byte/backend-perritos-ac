@@ -1,46 +1,48 @@
 
-use actix_web::{web,get, HttpResponse, Responder};
+use actix_web::{HttpResponse, Responder, get, post, web::{self}};
 use mysql::*;
 use mysql::prelude::*;
 use crate::database;
 use serde::{Serialize,Deserialize};
 
 
+#[derive(Serialize,Deserialize)]
 pub struct Mascota {
-    pub tipo: TipoMascota,
+    pub id: i32,
+    pub tipo: String,
     pub raza: String
  
  }
 
- pub enum TipoMascota{
-     Perro,
-     Gatto
+ #[derive(Deserialize)]
+pub struct MascotaBody{
+   pub  tipo: String,
+   pub  raza: String
  }
 
-#[get("/mascotas")]
+#[get("/pets")]
 pub async fn get_pets(data: web::Data<database::conexion_db::AppState> ) -> impl Responder{
-//     let pool = &data.conexion;
-//     let pool = pool.clone();
-//     let mut conn = pool.get_conn().unwrap();
-//     let selected = conn.query_map("SELECT * FROM categoria", 
-//     |(id_categoria,clasificacion,categoria,sub_categoria)|{
-//         Mascota{
-//             id_categoria,
-//            clasificacion,
-//            categoria,
-//            sub_categoria
-//        }
-//     } 
-// ).unwrap();
+    let pool = &data.conexion;
+    let pool = pool.clone();
+    let mut conn = pool.get_conn().unwrap();
+    let pets_array = conn.query_map("select * from mascota",
+     |(id,tipo,raza)| {
+        Mascota{
+            id,
+            tipo,
+            raza
+        }
+     }).unwrap();
 
-// HttpResponse::Ok().json(selected)
-    // web::Json(Mascota{
-    //     id_categoria: String::from("a"),
-    //     clasificacion:String::from("a"),
-    //     categoria:String::from("v"),
-    //     sub_categoria:String::from("t"),
-    // })
-    HttpResponse::Ok().body("ey")
+     HttpResponse::Ok().json(pets_array)   
+}
+
+#[post("/add_pet")]
+pub async fn add_pet(body: web::Json<MascotaBody>, data: web::Data<database::conexion_db::AppState>) -> impl Responder{
+    
+    println!("tipo: {}",body.tipo);
+    println!("Raza: {}",body.raza);
+    HttpResponse::Ok().body("se agrego correctamente")
 }
 
 

@@ -17,8 +17,6 @@ async fn main() -> Result<(),std::io::Error> {
 
 async fn listener_server() -> std::io::Result<()>{
     println!("server conected");
-    println!("database conected");
-  
     let app_data = web::Data::new(
        database::conexion_db::AppState{
        app_name:String::from("backend"),
@@ -30,6 +28,7 @@ async fn listener_server() -> std::io::Result<()>{
             .app_data(app_data.clone())
             .service(routes::mascota_route::get_pets)
             .service(routes::cliente_route::get_user)
+            .service(routes::mascota_route::add_pet)
    })
    .bind("localhost:8080")?
    .run()
