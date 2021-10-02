@@ -1,8 +1,9 @@
 
-use actix_web::{HttpResponse, Responder, get, post, web::{self}};
+use actix_web::{HttpResponse, Responder, get, web::{self}};
 use mysql::*;
 use mysql::prelude::*;
 use crate::database;
+use std::sync::Arc;
 use serde::{Serialize,Deserialize};
 
 
@@ -14,7 +15,7 @@ pub struct Mascota {
  
  }
 
- #[derive(Deserialize)]
+ #[derive(Serialize,Deserialize)]
 pub struct MascotaBody{
    pub  tipo: String,
    pub  raza: String
@@ -22,27 +23,23 @@ pub struct MascotaBody{
 
 #[get("/pets")]
 pub async fn get_pets(data: web::Data<database::conexion_db::AppState> ) -> impl Responder{
-    let pool = &data.conexion;
+    match query_get_pet(&data.conexion){
+        Ok(data) => HttpResponse::Ok().json(data),
+        Err(_) => HttpResponse::Ok().body("No se pudo hacer la peticion")
+    }
+}
+
+fn query_get_pet(pool: &Arc<Pool>) -> Result<Vec<Mascota>>{
     let pool = pool.clone();
     let mut conn = pool.get_conn().unwrap();
-    let pets_array = conn.query_map("select * from mascota",
+   conn.query_map("SELECT * FROM mascota",
      |(id,tipo,raza)| {
         Mascota{
             id,
             tipo,
             raza
         }
-     }).unwrap();
-
-     HttpResponse::Ok().json(pets_array)   
-}
-
-#[post("/add_pet")]
-pub async fn add_pet(body: web::Json<MascotaBody>, data: web::Data<database::conexion_db::AppState>) -> impl Responder{
-    
-    println!("tipo: {}",body.tipo);
-    println!("Raza: {}",body.raza);
-    HttpResponse::Ok().body("se agrego correctamente")
+    })
 }
 
 

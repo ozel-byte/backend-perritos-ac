@@ -1,6 +1,7 @@
 use mysql::*;
 
 use std::sync::Arc;
+
  pub struct AppState{
   pub app_name: String,
   pub conexion: Arc<Pool>

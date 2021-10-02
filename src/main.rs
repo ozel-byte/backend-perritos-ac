@@ -2,11 +2,6 @@ mod routes;
 mod database;
 use actix_web::{web,App, HttpServer, };
 
-//tipo de mascota
-//raza
-//nombre cliente
-//telfonos
-
 
 #[actix_web::main]
 async fn main() -> Result<(),std::io::Error> {
@@ -28,7 +23,7 @@ async fn listener_server() -> std::io::Result<()>{
             .app_data(app_data.clone())
             .service(routes::mascota_route::get_pets)
             .service(routes::cliente_route::get_user)
-            .service(routes::mascota_route::add_pet)
+            .service(routes::cliente_route::add_user)
    })
    .bind("localhost:8080")?
    .run()
