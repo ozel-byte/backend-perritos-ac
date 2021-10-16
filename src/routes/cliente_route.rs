@@ -67,10 +67,10 @@ pub async fn get_user() -> impl Responder {
 #[post("/add_user")]
 pub async fn add_user(data: web::Json<Cliente>) -> impl Responder {
     let params = OptsBuilder::new()
-        .user(Some("administrador"))
-        .db_name(Some("perritosac"))
-        .ip_or_hostname(Some("167.172.146.90"))
-        .pass(Some("p0Hb67269.YCx1fcqwS540Obv"));
+        .user(Some(""))
+        .db_name(Some(""))
+        .ip_or_hostname(Some(""))
+        .pass(Some(""));
     let pool = Pool::new(params).unwrap();
     let mut conn = pool.get_conn().unwrap();
 
