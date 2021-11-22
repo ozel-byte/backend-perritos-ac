@@ -24,13 +24,14 @@ pub struct ClienteGet {
 #[get("/user")]
 pub async fn get_user() -> impl Responder {
     let params = OptsBuilder::new()
-        .user(Some(""))
-        .db_name(Some(""))
-        .ip_or_hostname(Some(""))
-        .pass(Some(""));
+        .user(Some("root"))
+        .db_name(Some("perritosac"))
+        .ip_or_hostname(Some("localhost"))
+        .pass(Some("password"));
     let pool = Pool::new(params).unwrap();
     let mut pool = pool.get_conn().unwrap();
-    let result = pool.query_map("SELECT mascota.id as id_m, tipo,raza, cliente.id as id_c, name,phone from mascota inner join cliente ON mascota.id = cliente.id_pet",
+    let result = pool.query_map("SELECT mascota.id_mascota as id_m, tipo,raza, cliente.id as id_c, nombre as name,phone from 
+    mascota inner join cliente ON mascota.id_mascota = cliente.id_mascota",
      |(id_m, tipo, raza, id_c, name, phone):(i32,String,String,i32,String,String)| {
         ClienteGet{
                         id_c,
@@ -67,10 +68,10 @@ pub async fn get_user() -> impl Responder {
 #[post("/add_user")]
 pub async fn add_user(data: web::Json<Cliente>) -> impl Responder {
     let params = OptsBuilder::new()
-        .user(Some(""))
-        .db_name(Some(""))
-        .ip_or_hostname(Some(""))
-        .pass(Some(""));
+        .user(Some("root"))
+        .db_name(Some("perritosac"))
+        .ip_or_hostname(Some("localhost"))
+        .pass(Some("password"));
     let pool = Pool::new(params).unwrap();
     let mut conn = pool.get_conn().unwrap();
 
@@ -82,11 +83,11 @@ pub async fn add_user(data: web::Json<Cliente>) -> impl Responder {
 
     let q = resp.unwrap();
     let r = conn.exec_drop(
-        "INSERT INTO cliente (name, phone, id_pet) VALUES (:name, :phone, :id_pet)",
+        "INSERT INTO cliente (nombre, phone, id_mascota) VALUES (:nombre, :phone, :id_mascota)",
         params! {
-            "name" => &data.name,
+            "nombre" => &data.name,
             "phone" => &data.phone,
-            "id_pet" => q
+            "id_mascota" => q
         },
     );
     let resp_v2 = match r {
